@@ -52,6 +52,7 @@ websocket基于socket和http一样是应用层的协议，和socket不在一个�
 - 防止客户端意外请求websocket服务
 
 3. 为什么要mask websocket的数据
+
 屏蔽的原因是使 websocket 流量看起来与正常的 HTTP 流量不同，并且变得完全不可预测。
 否则，任何尚未升级以理解 Websocket 协议的网络基础设施设备都可能将其误认为正常的 http 流量，从而导致各种问题。
 
