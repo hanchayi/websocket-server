@@ -1,8 +1,9 @@
 const http = require('node:http')
 const { EventEmitter } = require('node:events')
-const crypto = require('crypto')
-// const GUID = '258EDFA5-E914–47DA-95CA-C5AB0DC85B11'
+
 const GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+
+
 
 class WebSocketServer extends EventEmitter {
 
