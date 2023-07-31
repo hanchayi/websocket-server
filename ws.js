@@ -17,6 +17,37 @@ class WebSocketServer extends EventEmitter {
   }
 
   /**
+   * 创建一个数据帧
+   * @param {string} data
+   */
+  createFrame(data) {
+    const payload = JSON.stringify(data)
+    const payloadByteLength = Buffer.byteLength(payload);
+    let payloadByteOffset = 2;
+    let payloadLength = payloadByteLength;
+
+    if (payloadByteLength > 65535) {
+      payloadLength = 127
+      payloadByteOffset += 8
+    } else if (payloadByteLength > 125) {
+      payloadLength = 126
+      payloadByteOffset += 2
+    }
+
+    const buffer = Buffer.alloc(payloadByteOffset + payloadByteLength)
+    buffer.writeUint8(0b10000001, 0)
+    buffer[1] = payloadLength
+    if (payloadLength === 126) {
+      buffer.writeUint16BE(payloadByteLength, 2)
+    } else if (payloadLength === 127){
+      buffer.writeUint64BE(payloadByteLength, 2)
+    }
+
+    buffer.write(payload, payloadByteOffset)
+    return buffer
+  }
+
+  /**
    * 解析数据帧
    * @param {Buffer} buffer
    *
@@ -122,7 +153,10 @@ class WebSocketServer extends EventEmitter {
       socket.write(responseHeaders.concat('\r\n').join('\r\n'))
 
       socket.on('data', (buffer) => {
-        this.emit('data', this.parseFrame(buffer))
+        this.emit('data',
+          this.parseFrame(buffer),
+          (data) => { socket.write(this.createFrame(data)) }
+        )
       })
 
       this.on('close', () => {
@@ -144,6 +178,7 @@ class WebSocketServer extends EventEmitter {
     console.log(`WebSocket server listening on port ${this.port}`);
     this._server.listen(this.port)
   }
+
 }
 
 
