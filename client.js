@@ -10,7 +10,7 @@ ws.onopen = () => {
   }))
 
   ws.onmessage = (message) => {
-    console.log(message.data)
+    console.log('message received', message.data)
   }
 }
 
